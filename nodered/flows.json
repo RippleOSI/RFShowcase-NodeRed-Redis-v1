@@ -1,0 +1,3668 @@
+[
+    {
+        "id": "b47b3ef6.8e2d9",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "19a0007f.a78c7",
+        "type": "tab",
+        "label": "JSON-REDIS-TEST",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "925738e1.993308",
+        "type": "tab",
+        "label": "JSON-REDIS-SECOND",
+        "disabled": false,
+        "info": "A simple API implementation for JSON data transformation.\nJSON data is stored in Redis Database."
+    },
+    {
+        "id": "89248eb9.e979f",
+        "type": "redis-config",
+        "z": "",
+        "host": "192.168.88.32",
+        "port": "{{REDIS_PORT_6379_TCP_PORT}}",
+        "dbase": "{{REDIS_DB}}",
+        "pass": "X6NvLgr5NJ/INEuzt6mxP5QdTyK+2ZQiXwwtaj8Mipy97SRM1pj6dK734XmoFZrNg5+b8kpO54cIPTVkdeveloper@ubuntu"
+    },
+    {
+        "id":"b176ac6b.c1adb",
+        "type":"http-auth0",
+        "z":"bda2c5b8.dfd998",
+        "name":"",
+        "role":"",
+        "group":"",
+        "url":"/test",
+        "method":"get",
+        "auth0":"2cd14f9f.247e8",
+        "x":200,
+        "y":180,
+        "wires":[
+            [
+                "b1520a2.4062ff8"
+            ]
+        ]
+    },
+    {
+        "id":"b1520a2.4062ff8",
+        "type":"debug",
+        "z":"bda2c5b8.dfd998",
+        "name":"",
+        "active":true,
+        "console":"false",
+        "complete":"false",
+        "x":420,
+        "y":180,
+        "wires":[]
+    },
+    {
+        "id":"2cd14f9f.247e8",
+        "type":"auth0-server",
+        "z":"bda2c5b8.dfd998",
+        "name":"Your Auth0 Account",
+        "address":"https://yourdomain.auth0.com/tokeninfo"
+    },
+    {
+        "id": "6d8c5bfd.1ceec4",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/allergies/:sourceId",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 260,
+        "wires": [
+            [
+                "25d4b2e7.aacffe"
+            ]
+        ]
+    },
+    {
+        "id": "25d4b2e7.aacffe",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"allergies\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"transform\": msg.req.query.transform\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 260,
+        "wires": [
+            [
+                "9fa35b3.f6ae1a8",
+                "f7801fea.ca478"
+            ]
+        ]
+    },
+    {
+        "id": "f5aebb7b.f73dc8",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hget",
+        "name": "",
+        "topic": "",
+        "x": 890,
+        "y": 240,
+        "wires": [
+            [
+                "17c2a0e8.5eed8f"
+            ]
+        ]
+    },
+    {
+        "id": "9fa35b3.f6ae1a8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HGET params",
+        "func": "payload = msg.payload\nmsg.payload = [payload.ptId+'.'+payload.datatype, payload.sourceId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 240,
+        "wires": [
+            [
+                "f5aebb7b.f73dc8"
+            ]
+        ]
+    },
+    {
+        "id": "ff27ac06.e7921",
+        "type": "json",
+        "z": "925738e1.993308",
+        "name": "Database JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 900,
+        "y": 300,
+        "wires": [
+            [
+                "62d5f059.b750c"
+            ]
+        ]
+    },
+    {
+        "id": "bb38269c.1050c8",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "GET Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "b9d8dbfb.d50da8",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Create Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f7801fea.ca478",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Transform method",
+        "func": "msg.payload = {transform: msg.payload.transform ? msg.payload.transform : ''};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 360,
+        "wires": [
+            [
+                "62d5f059.b750c"
+            ]
+        ]
+    },
+    {
+        "id": "62d5f059.b750c",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "Add transform method",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 920,
+        "y": 360,
+        "wires": [
+            [
+                "613dabe9.6ee024"
+            ]
+        ]
+    },
+    {
+        "id": "613dabe9.6ee024",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Transform Switch",
+        "property": "payload.transform",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TransformA-Allergy-UI2openEHR",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TransformB-Allergy-UI2FHIR",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1150,
+        "y": 360,
+        "wires": [
+            [
+                "feeae5fa.069458"
+            ],
+            [
+                "59875d8d.473134"
+            ],
+            [
+                "9f5b60e8.fd086"
+            ]
+        ]
+    },
+    {
+        "id": "feeae5fa.069458",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "TransformA-Allergy-UI2openEHR",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"allergies_and_adverse_reactions\": {\t      \"adverse_reaction_risk\": {\t        \"causative_agent\": {\t          \"value\": msg.payload.cause,\t          \"code\": msg.payload.causeCode,\t          \"terminology\": msg.payload.causeTerminology\t        },\t        \"reaction_details\": {\t          \"manifestation\": {\t            \"code\": msg.payload.terminologyCode,\t            \"value\": msg.payload.reaction\t          }\t        }\t      }\t    },\t    \"composer\": {\t      \"value\": msg.payload.author\t    },\t    \"start_time\": $fromMillis(msg.payload.dateCreated),\t    \"host\": msg.payload.source,\t    \"uid\": msg.payload.sourceId,\t    \"patientId\": msg.payload.patientId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1440,
+        "y": 320,
+        "wires": [
+            [
+                "bb38269c.1050c8"
+            ]
+        ]
+    },
+    {
+        "id": "59875d8d.473134",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "TransformB-Allergy-UI2FHIR",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"resourceType\": \"AllergyIntolerance\",\t    \"identifier\": [\t      {\t        \"system\": msg.payload.source,\t        \"value\": msg.payload.sourceId\t      }\t    ],\t    \"onset\": $fromMillis(msg.payload.dateCreated),\t    \"recordedDate\": $fromMillis(msg.payload.dateCreated),\t    \"recorder\": {\t      \"reference\": \"GMC Doctor\",\t      \"display\": msg.payload.author\t    },\t    \"patient\": {\t      \"reference\": \"=> fhirReference(patientId, 'Patient', false)\",\t      \"display\": \"{{patientName}}\"\t    },\t    \"substance\": {\t      \"coding\": [\t        {\t          \"system\": msg.payload.causeCode,\t          \"code\": msg.payload.causeTerminology,\t          \"display\": msg.payload.cause\t        }\t      ]\t    },\t    \"status\": \"active\",\t    \"type\": \"allergy\",\t    \"category\": \"other\",\t    \"reaction\": [\t      {\t        \"substance\": {\t          \"coding\": [\t            {\t              \"system\": msg.payload.causeCode,\t              \"code\": msg.payload.causeTerminology,\t              \"display\": msg.payload.cause\t            }\t          ],\t          \"text\": msg.payload.ause\t        },\t        \"certainty\": \"confirmed\",\t        \"manifestation\": [\t          {\t            \"coding\": [\t              {\t                \"system\": msg.payload.terminologyCode,\t                \"code\": \"TBC\",\t                \"display\": msg.payload.reaction\t              }\t            ],\t            \"text\": msg.payload.reaction\t          }\t        ],\t        \"description\": msg.payload.reaction\t      }\t    ],\t    \"note\": msg.payload.reaction\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1420,
+        "y": 360,
+        "wires": [
+            [
+                "bb38269c.1050c8"
+            ]
+        ]
+    },
+    {
+        "id": "a4711606.958a88",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/problems/:sourceId",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 340,
+        "wires": [
+            [
+                "ef0ce026.069e1"
+            ]
+        ]
+    },
+    {
+        "id": "ef0ce026.069e1",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"problems\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"transform\": msg.req.query.transform\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 340,
+        "wires": [
+            [
+                "9fa35b3.f6ae1a8",
+                "f7801fea.ca478"
+            ]
+        ]
+    },
+    {
+        "id": "10378eb7.848291",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/medications/:sourceId",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 300,
+        "wires": [
+            [
+                "fb22aa08.385358"
+            ]
+        ]
+    },
+    {
+        "id": "fb22aa08.385358",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"medications\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"transform\": msg.req.query.transform\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 300,
+        "wires": [
+            [
+                "9fa35b3.f6ae1a8",
+                "f7801fea.ca478"
+            ]
+        ]
+    },
+    {
+        "id": "9f5b60e8.fd086",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "No Transform",
+        "func": "msg.payload = msg.payload;\ndelete msg.payload.transform;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1380,
+        "y": 400,
+        "wires": [
+            [
+                "bb38269c.1050c8"
+            ]
+        ]
+    },
+    {
+        "id": "17c2a0e8.5eed8f",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1050,
+        "y": 240,
+        "wires": [
+            [
+                "b49df65f.2479a8"
+            ],
+            [
+                "ff27ac06.e7921"
+            ]
+        ]
+    },
+    {
+        "id": "81dda813.067af8",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "GET Data Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1700,
+        "y": 233,
+        "wires": []
+    },
+    {
+        "id": "4f525edd.fbd47",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/allergies",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 40,
+        "wires": [
+            [
+                "44930f9a.2dca7"
+            ]
+        ]
+    },
+    {
+        "id": "44930f9a.2dca7",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PostParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"allergies\",\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 40,
+        "wires": [
+            [
+                "59edd04d.d2208"
+            ]
+        ]
+    },
+    {
+        "id": "c81ca587.f3c5b8",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PostParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"medications\",\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 80,
+        "wires": [
+            [
+                "59edd04d.d2208"
+            ]
+        ]
+    },
+    {
+        "id": "7e92fde4.bb9014",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/medications",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 80,
+        "wires": [
+            [
+                "c81ca587.f3c5b8"
+            ]
+        ]
+    },
+    {
+        "id": "cf44f2f3.c69ea",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PostParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"problems\",\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 121,
+        "wires": [
+            [
+                "59edd04d.d2208"
+            ]
+        ]
+    },
+    {
+        "id": "b03f1a04.225c78",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/problems",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 121,
+        "wires": [
+            [
+                "cf44f2f3.c69ea"
+            ]
+        ]
+    },
+    {
+        "id": "59edd04d.d2208",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Add Source ID to Data",
+        "func": "newid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);\nmsg.payload.data.id = newid;\nmsg.payload.data.sourceId = newid;\nmsg.payload.data.source = \"ethercis\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 80,
+        "wires": [
+            [
+                "febe622e.dafad"
+            ]
+        ]
+    },
+    {
+        "id": "febe622e.dafad",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = [payload.ptId + '.' + payload.datatype, payload.data.sourceId, JSON.stringify(payload.data)];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 80,
+        "wires": [
+            [
+                "13f78b6a.34dda5"
+            ]
+        ]
+    },
+    {
+        "id": "13f78b6a.34dda5",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 1130,
+        "y": 80,
+        "wires": [
+            [
+                "5d93a162.56e96"
+            ]
+        ]
+    },
+    {
+        "id": "5d93a162.56e96",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"success\", msg: \"data created successfully\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1370,
+        "y": 80,
+        "wires": [
+            [
+                "b9d8dbfb.d50da8"
+            ]
+        ]
+    },
+    {
+        "id": "7010667d.78c638",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/allergies/:sourceId",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 520,
+        "wires": [
+            [
+                "d20474c9.0716c8"
+            ]
+        ]
+    },
+    {
+        "id": "57afb8f5.0122a8",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/medications/:sourceId",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 560,
+        "wires": [
+            [
+                "753f4db5.defb04"
+            ]
+        ]
+    },
+    {
+        "id": "6cc2e897.8d88b8",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/problems/:sourceId",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 601,
+        "wires": [
+            [
+                "c357eff0.b1ec8"
+            ]
+        ]
+    },
+    {
+        "id": "c357eff0.b1ec8",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PutParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"problems\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 600,
+        "wires": [
+            [
+                "fcd2e200.e8231",
+                "461cffc0.c57c8"
+            ]
+        ]
+    },
+    {
+        "id": "753f4db5.defb04",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PutParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"medications\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 560,
+        "wires": [
+            [
+                "fcd2e200.e8231",
+                "461cffc0.c57c8"
+            ]
+        ]
+    },
+    {
+        "id": "d20474c9.0716c8",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PutParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"allergies\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 520,
+        "wires": [
+            [
+                "fcd2e200.e8231",
+                "461cffc0.c57c8"
+            ]
+        ]
+    },
+    {
+        "id": "507641ef.49e03",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = [payload.ptId + '.' + payload.datatype, payload.sourceId, JSON.stringify(payload.data)];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 940,
+        "y": 600,
+        "wires": [
+            [
+                "bac69871.af1258"
+            ]
+        ]
+    },
+    {
+        "id": "bac69871.af1258",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 1150,
+        "y": 600,
+        "wires": [
+            [
+                "9bb082e2.64ab9"
+            ]
+        ]
+    },
+    {
+        "id": "9bb082e2.64ab9",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"success\", msg: \"data updated successfully\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 600,
+        "wires": [
+            [
+                "e08e9b84.109478"
+            ]
+        ]
+    },
+    {
+        "id": "e08e9b84.109478",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Update Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "bb44f981.3a7588",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/allergies/:sourceId",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 740,
+        "wires": [
+            [
+                "36335b1d.907ba4"
+            ]
+        ]
+    },
+    {
+        "id": "5c562e0f.dc6d5",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/medications/:sourceId",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 780,
+        "wires": [
+            [
+                "6a0638e.a332bc8"
+            ]
+        ]
+    },
+    {
+        "id": "7e84d933.ae7568",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/problems/:sourceId",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 821,
+        "wires": [
+            [
+                "bef03338.86bab"
+            ]
+        ]
+    },
+    {
+        "id": "bef03338.86bab",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "DeleteParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"problems\",\t    \"sourceId\": msg.req.params.sourceId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 820,
+        "wires": [
+            [
+                "4c4000fa.5a005"
+            ]
+        ]
+    },
+    {
+        "id": "6a0638e.a332bc8",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "DeleteParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"medications\",\t    \"sourceId\": msg.req.params.sourceId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 780,
+        "wires": [
+            [
+                "4c4000fa.5a005"
+            ]
+        ]
+    },
+    {
+        "id": "36335b1d.907ba4",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "DeleteParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"allergies\",\t    \"sourceId\": msg.req.params.sourceId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 740,
+        "wires": [
+            [
+                "4c4000fa.5a005"
+            ]
+        ]
+    },
+    {
+        "id": "4c4000fa.5a005",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HDEL params",
+        "func": "payload = msg.payload;\nmsg.payload = [payload.ptId + '.' + payload.datatype, payload.sourceId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 780,
+        "wires": [
+            [
+                "3c51628d.07b71e"
+            ]
+        ]
+    },
+    {
+        "id": "3c51628d.07b71e",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hdel",
+        "name": "",
+        "topic": "",
+        "x": 910,
+        "y": 780,
+        "wires": [
+            [
+                "e865d294.4f2af"
+            ]
+        ]
+    },
+    {
+        "id": "1d348edb.2e74c1",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"success\", msg: \"data deleted successfully\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 760,
+        "wires": [
+            [
+                "bf4ac53c.9f28e8"
+            ]
+        ]
+    },
+    {
+        "id": "bf4ac53c.9f28e8",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Delete Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "e865d294.4f2af",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Check the Result",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 780,
+        "wires": [
+            [
+                "1d348edb.2e74c1"
+            ],
+            [
+                "1fc63692.b24ee9"
+            ]
+        ]
+    },
+    {
+        "id": "1fc63692.b24ee9",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"cannot delete data\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 800,
+        "wires": [
+            [
+                "774fef02.6191b"
+            ]
+        ]
+    },
+    {
+        "id": "774fef02.6191b",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Delete Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1690,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "7ae11825.570ab8",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/synopsis/allergies/",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 980,
+        "wires": [
+            [
+                "7f4eece6.40eb24"
+            ]
+        ]
+    },
+    {
+        "id": "7f4eece6.40eb24",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"allergies\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 980,
+        "wires": [
+            [
+                "9ec4d8b9.6403d8",
+                "14de6c75.c5cfa4",
+                "ba474f3f.2750c"
+            ]
+        ]
+    },
+    {
+        "id": "9a39413f.93352",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/synopsis/problems",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1060,
+        "wires": [
+            [
+                "bb594cbc.a1cea"
+            ]
+        ]
+    },
+    {
+        "id": "bb594cbc.a1cea",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"problems\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1060,
+        "wires": [
+            [
+                "9ec4d8b9.6403d8",
+                "14de6c75.c5cfa4",
+                "ba474f3f.2750c"
+            ]
+        ]
+    },
+    {
+        "id": "b781d72e.0c1288",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/synopsis/medications",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 1020,
+        "wires": [
+            [
+                "75c40af2.c36a34"
+            ]
+        ]
+    },
+    {
+        "id": "75c40af2.c36a34",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"medications\"\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1020,
+        "wires": [
+            [
+                "9ec4d8b9.6403d8",
+                "14de6c75.c5cfa4",
+                "ba474f3f.2750c"
+            ]
+        ]
+    },
+    {
+        "id": "9ec4d8b9.6403d8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HKEYS params",
+        "func": "payload = msg.payload;\nmsg.payload = [payload.ptId + '.' + payload.datatype];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 980,
+        "wires": [
+            [
+                "b077f4b7.3e2eb8"
+            ]
+        ]
+    },
+    {
+        "id": "b077f4b7.3e2eb8",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hkeys",
+        "name": "",
+        "topic": "",
+        "x": 910,
+        "y": 980,
+        "wires": [
+            [
+                "dd49bf89.bd4d9"
+            ]
+        ]
+    },
+    {
+        "id": "14de6c75.c5cfa4",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "JOIN Keys Data",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 760,
+        "y": 1060,
+        "wires": [
+            [
+                "a12ba593.510918"
+            ]
+        ]
+    },
+    {
+        "id": "7c8ce7b0.cdcd58",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "Keys JSON",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"keys\":msg.payload\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1330,
+        "y": 1000,
+        "wires": [
+            [
+                "14de6c75.c5cfa4"
+            ]
+        ]
+    },
+    {
+        "id": "a12ba593.510918",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HMGET params",
+        "func": "payload = msg.payload;\nmsg.payload = [payload.ptId + '.' + payload.datatype];\nfor (i = 0; i < 4 ; i++) {\n    if (payload.keys[i]) {\n        msg.payload.push(payload.keys[i]);\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 1060,
+        "wires": [
+            [
+                "657e5972.4d6cf8"
+            ]
+        ]
+    },
+    {
+        "id": "657e5972.4d6cf8",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hmget",
+        "name": "",
+        "topic": "",
+        "x": 1230,
+        "y": 1060,
+        "wires": [
+            [
+                "c5468e02.60db1"
+            ]
+        ]
+    },
+    {
+        "id": "c5468e02.60db1",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Synopsis JSON String",
+        "func": "payload = msg.payload;\nmsg.payload = \"[\";\nfor (i = 0; i < payload.length; i++) {\n    msg.payload += payload[i] + \",\";\n}\nmsg.payload = msg.payload.substring(0, msg.payload.length - 1) + \"]\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 980,
+        "y": 1114,
+        "wires": [
+            [
+                "82916445.d134c8"
+            ]
+        ]
+    },
+    {
+        "id": "82916445.d134c8",
+        "type": "json",
+        "z": "925738e1.993308",
+        "name": "Synopsis JSON Object",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1200,
+        "y": 1114,
+        "wires": [
+            [
+                "a7a6f5c1.3ad198"
+            ]
+        ]
+    },
+    {
+        "id": "a7a6f5c1.3ad198",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Make Synopsis Object",
+        "func": "payload = msg.payload;\nmsg.payload = {\n    \"synopsis\": payload,\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1420,
+        "y": 1114,
+        "wires": [
+            [
+                "ba474f3f.2750c"
+            ]
+        ]
+    },
+    {
+        "id": "ba474f3f.2750c",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "JOIN Synopsis Data",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 780,
+        "y": 1179,
+        "wires": [
+            [
+                "d5f86590.5daaf8"
+            ]
+        ]
+    },
+    {
+        "id": "d5f86590.5daaf8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Format Synopsis Data",
+        "func": "payload = msg.payload;\n\nmsg.payload = {\n    \"heading\": payload.datatype,\n    \"synopsis\": [],\n    \"token\": \"input token\"\n}\n\nfor (i = 0; i < payload.synopsis.length; i++) {\n    synopsis = {\n        \"dateCreated\": payload.synopsis[i].dateCreated,\n        \"source\": payload.synopsis[i].source,\n        \"sourceId\": payload.synopsis[i].sourceId,\n        \"text\": \"\"\n    };\n    switch(payload.datatype) {\n        case 'allergies':\n            synopsis.text = payload.synopsis[i].reaction;\n            break;\n        case 'medications':\n            synopsis.text = payload.synopsis[i].name;\n            break;\n        case 'problems':\n            synopsis.text = payload.synopsis[i].problem;\n            break;\n    }\n    msg.payload.synopsis.push(synopsis);\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1060,
+        "y": 1179,
+        "wires": [
+            [
+                "cc7c9d47.ba836"
+            ]
+        ]
+    },
+    {
+        "id": "cc7c9d47.ba836",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Synopsis Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1710,
+        "y": 1173,
+        "wires": []
+    },
+    {
+        "id": "dd49bf89.bd4d9",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Check the Result",
+        "property": "payload.length",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 980,
+        "wires": [
+            [
+                "756f8ec9.3fd9c"
+            ],
+            [
+                "7c8ce7b0.cdcd58"
+            ]
+        ]
+    },
+    {
+        "id": "756f8ec9.3fd9c",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"no data available\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 960,
+        "wires": [
+            [
+                "89cf6844.484aa8"
+            ]
+        ]
+    },
+    {
+        "id": "89cf6844.484aa8",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Synopsis Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1700,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "fcd2e200.e8231",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HEXISTS params",
+        "func": "payload = msg.payload\nmsg.payload = [payload.ptId+'.'+payload.datatype, payload.sourceId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 710,
+        "y": 520,
+        "wires": [
+            [
+                "8daf67f1.d7fe98"
+            ]
+        ]
+    },
+    {
+        "id": "8daf67f1.d7fe98",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hexists",
+        "name": "",
+        "topic": "",
+        "x": 930,
+        "y": 520,
+        "wires": [
+            [
+                "c3f6a765.523d68"
+            ]
+        ]
+    },
+    {
+        "id": "c3f6a765.523d68",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Check the Result",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 520,
+        "wires": [
+            [
+                "76c65c71.c8b194"
+            ],
+            [
+                "ddedcfa1.e087c"
+            ]
+        ]
+    },
+    {
+        "id": "76c65c71.c8b194",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"cannot find data to update\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 500,
+        "wires": [
+            [
+                "7bf4af9e.0c276"
+            ]
+        ]
+    },
+    {
+        "id": "7bf4af9e.0c276",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Update Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1690,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "ddedcfa1.e087c",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Success JSON",
+        "func": "msg.payload = {\n    result: \"exist\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 540,
+        "wires": [
+            [
+                "461cffc0.c57c8"
+            ]
+        ]
+    },
+    {
+        "id": "461cffc0.c57c8",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "Join Success Result",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "5",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 700,
+        "y": 600,
+        "wires": [
+            [
+                "507641ef.49e03"
+            ]
+        ]
+    },
+    {
+        "id": "b49df65f.2479a8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"data doesn't exists\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1370,
+        "y": 233,
+        "wires": [
+            [
+                "81dda813.067af8"
+            ]
+        ]
+    },
+    {
+        "id": "fbe75fb.6e4b9a",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/vitalsigns",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 162,
+        "wires": [
+            [
+                "4497d400.2383bc"
+            ]
+        ]
+    },
+    {
+        "id": "4497d400.2383bc",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PostParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"vitalsigns\",\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 160,
+        "wires": [
+            [
+                "59edd04d.d2208"
+            ]
+        ]
+    },
+    {
+        "id": "703acbaf.901b04",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/vitalsigns/:sourceId",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 380,
+        "wires": [
+            [
+                "c0245b2d.befd48"
+            ]
+        ]
+    },
+    {
+        "id": "c0245b2d.befd48",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"vitalsigns\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"transform\": msg.req.query.transform\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 380,
+        "wires": [
+            [
+                "9fa35b3.f6ae1a8",
+                "f7801fea.ca478"
+            ]
+        ]
+    },
+    {
+        "id": "e29996a5.2c2298",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/vitalsigns/:sourceId",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 640,
+        "wires": [
+            [
+                "9f679b7c.152788"
+            ]
+        ]
+    },
+    {
+        "id": "9f679b7c.152788",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PutParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"vitalsigns\",\t    \"sourceId\": msg.req.params.sourceId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 639,
+        "wires": [
+            [
+                "fcd2e200.e8231",
+                "461cffc0.c57c8"
+            ]
+        ]
+    },
+    {
+        "id": "40fa587a.c7dc98",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/patient/:ptId/vitalsigns/:sourceId",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 860,
+        "wires": [
+            [
+                "a9fcbced.1823a"
+            ]
+        ]
+    },
+    {
+        "id": "a9fcbced.1823a",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "DeleteParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"datatype\": \"vitalsigns\",\t    \"sourceId\": msg.req.params.sourceId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 860,
+        "wires": [
+            [
+                "4c4000fa.5a005"
+            ]
+        ]
+    },
+    {
+        "id": "607eb313.8fc79c",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PostParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1300,
+        "wires": [
+            [
+                "1c27f0f7.6147ef",
+                "4154acb4.e7d844"
+            ]
+        ]
+    },
+    {
+        "id": "767c79e.c3f1a88",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/mpi/patient/:ptId",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 1300,
+        "wires": [
+            [
+                "607eb313.8fc79c"
+            ]
+        ]
+    },
+    {
+        "id": "1c27f0f7.6147ef",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient', payload.ptId, JSON.stringify(payload.data)];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 1280,
+        "wires": [
+            [
+                "52b5bc20.3ae824"
+            ]
+        ]
+    },
+    {
+        "id": "4154acb4.e7d844",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient.name', payload.ptId, payload.data.name.family];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 1320,
+        "wires": [
+            [
+                "5a117598.a8f7dc"
+            ]
+        ]
+    },
+    {
+        "id": "52b5bc20.3ae824",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 950,
+        "y": 1280,
+        "wires": [
+            [
+                "c32b65a1.d1ce68"
+            ]
+        ]
+    },
+    {
+        "id": "c32b65a1.d1ce68",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {\n    \"save_data\": true,\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 1280,
+        "wires": [
+            [
+                "3ca35332.138f8c"
+            ]
+        ]
+    },
+    {
+        "id": "553bdf89.f561b",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Create Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "5a117598.a8f7dc",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 950,
+        "y": 1320,
+        "wires": [
+            [
+                "fe1a6de2.63667"
+            ]
+        ]
+    },
+    {
+        "id": "fe1a6de2.63667",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {\n    \"save_name\": true,\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 1320,
+        "wires": [
+            [
+                "3ca35332.138f8c"
+            ]
+        ]
+    },
+    {
+        "id": "3ca35332.138f8c",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "Join Results",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 1450,
+        "y": 1300,
+        "wires": [
+            [
+                "553bdf89.f561b"
+            ]
+        ]
+    },
+    {
+        "id": "a7d60ccb.36d08",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/mpi/patient/:ptId",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 1540,
+        "wires": [
+            [
+                "605903f6.f7ca2c"
+            ]
+        ]
+    },
+    {
+        "id": "605903f6.f7ca2c",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "PutParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId,\t    \"data\": msg.req.body.data\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1540,
+        "wires": [
+            [
+                "87ce3680.fae688",
+                "ae17ec93.533c2"
+            ]
+        ]
+    },
+    {
+        "id": "87ce3680.fae688",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HEXISTS params",
+        "func": "payload = msg.payload\nmsg.payload = ['patient', payload.ptId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 1500,
+        "wires": [
+            [
+                "20a0f613.d1d08a"
+            ]
+        ]
+    },
+    {
+        "id": "ae17ec93.533c2",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "Join Success Result",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 700,
+        "y": 1600,
+        "wires": [
+            [
+                "de236764.4539e8",
+                "6ff346da.c51288"
+            ]
+        ]
+    },
+    {
+        "id": "20a0f613.d1d08a",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hexists",
+        "name": "",
+        "topic": "",
+        "x": 930,
+        "y": 1500,
+        "wires": [
+            [
+                "2cd0a545.a3207a"
+            ]
+        ]
+    },
+    {
+        "id": "2cd0a545.a3207a",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Check the Result",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 1500,
+        "wires": [
+            [
+                "b0f85df5.b3125"
+            ],
+            [
+                "669ad8d6.6e8088"
+            ]
+        ]
+    },
+    {
+        "id": "669ad8d6.6e8088",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Success JSON",
+        "func": "msg.payload = {\n    result: \"exist\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 1520,
+        "wires": [
+            [
+                "ae17ec93.533c2"
+            ]
+        ]
+    },
+    {
+        "id": "b0f85df5.b3125",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"cannot find data to update\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1480,
+        "wires": [
+            [
+                "dccaa215.73cdb"
+            ]
+        ]
+    },
+    {
+        "id": "dccaa215.73cdb",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Update Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1690,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "de236764.4539e8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient', payload.ptId, JSON.stringify(payload.data)];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 940,
+        "y": 1580,
+        "wires": [
+            [
+                "80929c1c.94d38"
+            ]
+        ]
+    },
+    {
+        "id": "6ff346da.c51288",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HSET params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient.name', payload.ptId, payload.data.name.family];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 940,
+        "y": 1620,
+        "wires": [
+            [
+                "e16b2ea1.9544a"
+            ]
+        ]
+    },
+    {
+        "id": "e16b2ea1.9544a",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 1150,
+        "y": 1620,
+        "wires": [
+            [
+                "f2e70d5b.3d405"
+            ]
+        ]
+    },
+    {
+        "id": "80929c1c.94d38",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hset",
+        "name": "",
+        "topic": "",
+        "x": 1150,
+        "y": 1580,
+        "wires": [
+            [
+                "dfedad7c.48708"
+            ]
+        ]
+    },
+    {
+        "id": "dfedad7c.48708",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {\n    \"updated_data\": true,\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1580,
+        "wires": [
+            [
+                "3ff1cc26.b703a4"
+            ]
+        ]
+    },
+    {
+        "id": "f2e70d5b.3d405",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {\n    \"update_name\": true,\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1620,
+        "wires": [
+            [
+                "3ff1cc26.b703a4"
+            ]
+        ]
+    },
+    {
+        "id": "3ff1cc26.b703a4",
+        "type": "join",
+        "z": "925738e1.993308",
+        "name": "Join Results",
+        "mode": "custom",
+        "build": "merged",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 1510,
+        "y": 1600,
+        "wires": [
+            [
+                "3b6c49ed.ba6fd6"
+            ]
+        ]
+    },
+    {
+        "id": "3b6c49ed.ba6fd6",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Update Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "2b68b860.bf16e8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HDEL params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient', payload.ptId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 1720,
+        "wires": [
+            [
+                "c212ec09.49bb1"
+            ]
+        ]
+    },
+    {
+        "id": "df3a519e.9e15f",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "DeleteParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 1740,
+        "wires": [
+            [
+                "2b68b860.bf16e8",
+                "7880a642.9483c8"
+            ]
+        ]
+    },
+    {
+        "id": "19ad39dc.e5a6c6",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/mpi/patient/:ptId",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 1740,
+        "wires": [
+            [
+                "df3a519e.9e15f"
+            ]
+        ]
+    },
+    {
+        "id": "c212ec09.49bb1",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hdel",
+        "name": "",
+        "topic": "",
+        "x": 910,
+        "y": 1720,
+        "wires": [
+            [
+                "32bae7d2.d804e8"
+            ]
+        ]
+    },
+    {
+        "id": "32bae7d2.d804e8",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "Check the Result",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1110,
+        "y": 1720,
+        "wires": [
+            [
+                "49e23773.4aa7a8"
+            ],
+            [
+                "de6d374a.8d4768"
+            ]
+        ]
+    },
+    {
+        "id": "49e23773.4aa7a8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"success\", msg: \"data deleted successfully\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1700,
+        "wires": [
+            [
+                "4d8701b4.c30df"
+            ]
+        ]
+    },
+    {
+        "id": "de6d374a.8d4768",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"cannot delete data\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1740,
+        "wires": [
+            [
+                "14010910.c2eb17"
+            ]
+        ]
+    },
+    {
+        "id": "4d8701b4.c30df",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Delete Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "14010910.c2eb17",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "Delete Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1690,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "7880a642.9483c8",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HDEL params",
+        "func": "payload = msg.payload;\nmsg.payload = ['patient.name', payload.ptId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 1760,
+        "wires": [
+            [
+                "f3c6bd3e.9a819"
+            ]
+        ]
+    },
+    {
+        "id": "f3c6bd3e.9a819",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hdel",
+        "name": "",
+        "topic": "",
+        "x": 910,
+        "y": 1760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4b821782.3d10a8",
+        "type": "http in",
+        "z": "925738e1.993308",
+        "name": "",
+        "url": "/mpi/patient/:ptId",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 1400,
+        "wires": [
+            [
+                "d387fad7.b290b8"
+            ]
+        ]
+    },
+    {
+        "id": "d387fad7.b290b8",
+        "type": "change",
+        "z": "925738e1.993308",
+        "name": "GetParams",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"ptId\": msg.req.params.ptId\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 1400,
+        "wires": [
+            [
+                "1ffd8310.d0474d"
+            ]
+        ]
+    },
+    {
+        "id": "1ffd8310.d0474d",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Redis HGET params",
+        "func": "payload = msg.payload\nmsg.payload = ['patient', payload.ptId];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 1400,
+        "wires": [
+            [
+                "46f5b915.d85828"
+            ]
+        ]
+    },
+    {
+        "id": "46f5b915.d85828",
+        "type": "redis-command",
+        "z": "925738e1.993308",
+        "server": "89248eb9.e979f",
+        "command": "hget",
+        "name": "",
+        "topic": "",
+        "x": 950,
+        "y": 1400,
+        "wires": [
+            [
+                "28fa46e4.bba68a"
+            ]
+        ]
+    },
+    {
+        "id": "28fa46e4.bba68a",
+        "type": "switch",
+        "z": "925738e1.993308",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1150,
+        "y": 1400,
+        "wires": [
+            [
+                "54130874.e56e08"
+            ],
+            [
+                "7a2fe827.14a0e8"
+            ]
+        ]
+    },
+    {
+        "id": "54130874.e56e08",
+        "type": "function",
+        "z": "925738e1.993308",
+        "name": "Result JSON",
+        "func": "msg.payload = {data: \"fail\", msg: \"data doesn't exists\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1370,
+        "y": 1373,
+        "wires": [
+            [
+                "3d7bbc83.e81d24"
+            ]
+        ]
+    },
+    {
+        "id": "3d7bbc83.e81d24",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "GET Data Error",
+        "statusCode": "400",
+        "headers": {},
+        "x": 1700,
+        "y": 1373,
+        "wires": []
+    },
+    {
+        "id": "7a2fe827.14a0e8",
+        "type": "json",
+        "z": "925738e1.993308",
+        "name": "Database JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 1380,
+        "y": 1420,
+        "wires": [
+            [
+                "61326a4d.6b0844"
+            ]
+        ]
+    },
+    {
+        "id": "61326a4d.6b0844",
+        "type": "http response",
+        "z": "925738e1.993308",
+        "name": "GET Success",
+        "statusCode": "",
+        "headers": {},
+        "x": 1700,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "4329c8b1.2564c8",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Create Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 40,
+        "wires": [
+            [
+                "679b688b.9a1b68"
+            ]
+        ]
+    },
+    {
+        "id": "679b688b.9a1b68",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Create",
+        "func": "datatypes = [\n    \"allergies\", \n    \"medications\", \n    \"problems\",\n    \"vitalsigns\"\n];\n\ntype = Math.floor(Math.random() * 3);\ntimestamp = msg.payload;\n\nmsg.payload = {\n    ptId: 9999999001,\n    datatype: datatypes[type]\n}\n\nswitch(type) {\n    case 0:\n        msg.payload.data = {\n            author: \"Robert Tweed\",\n            cause: \"cats\",\n            causeCode: \"cats\",\n            causeTerminology: \"cats\",\n            dateCreated: timestamp,\n            reaction: \"cats\",\n            originalComposition: \"\",\n            originalSource: \"\",\n            terminologyCode: \"\",\n        };\n        break;\n    case 1:\n        msg.payload.data = {\n            author: \"Robert Tweed\",\n            dateCreated: timestamp,\n            doseAmount: \"20 mg\",\n            doseDirections: \"20 mg\",\n            doseTiming: \"1 per day\",\n            medicationCode: \"test\",\n            name: \"Paracetomol\",\n            route: \"Po Per Oral\",\n            startDate: \"2019-06-12\",\n            startTime: \"2019-06-15\",\n        }\n        break;\n    case 2:\n        msg.payload.data = {\n            author: \"Robert Tweed\",\n            code: \"test\",\n            dateCreated: timestamp,\n            dateOfOnset: \"2019-06-11\",\n            description: \"test\",\n            problem: \"Asthma\",\n            terminology: \"test\",\n            originalComposition: \"\",\n            originalSource: \"\",\n        }\n        break;\n    case 3:\n        msg.payload.data = {\n            author: \"Robert Tweed\",\n            dateCreate: 1560429237,\n            diastolicBP: \"98\",\n            heartRate: \"98\",\n            levelOfConsciousness: \"Voice\",\n            newsScore: \"11\",\n            oxygenSaturation: \"95\",\n            oxygenSupplemental: true,\n            respirationRate: \"13\",\n            systolicBP: \"98\",\n            temperature: \"37\",\n        }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 40,
+        "wires": [
+            [
+                "d234c29b.5a3bc"
+            ]
+        ]
+    },
+    {
+        "id": "f839ddb9.1ea5a",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Create Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 40,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "d234c29b.5a3bc",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Create API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/patient/'&msg.payload.ptId&'/'&msg.payload.datatype",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 40,
+        "wires": [
+            [
+                "cfb041cb.aae77"
+            ]
+        ]
+    },
+    {
+        "id": "cfb041cb.aae77",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is POST",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "POST",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 40,
+        "wires": [
+            [
+                "f839ddb9.1ea5a"
+            ]
+        ]
+    },
+    {
+        "id": "20c9de7b.79ddd2",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Allergies Synopsis Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "ae9c8a84.1c2878"
+            ]
+        ]
+    },
+    {
+        "id": "ae9c8a84.1c2878",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Allergies Synopsis",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/synopsis/allergies",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 410,
+        "y": 180,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "7b444dea.a777d4",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Allergy Data Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "c7783b81.64c978"
+            ]
+        ]
+    },
+    {
+        "id": "e161fe69.9145e",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Medicians Data",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/medications/0ndpc1dvqagapo0oui3num",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 400,
+        "y": 360,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "e68fe6f9.6da0b8",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Medications Data Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "e161fe69.9145e"
+            ]
+        ]
+    },
+    {
+        "id": "c7783b81.64c978",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Allergies Data",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/allergies/kq21alape7mtw7eupmrzua?transform=TransformB-Allergy-UI2FHIR",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 390,
+        "y": 320,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "2c1da3f4.d13e4c",
+        "type": "json",
+        "z": "19a0007f.a78c7",
+        "name": "Response Data JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1380,
+        "y": 240,
+        "wires": [
+            [
+                "3c6de0ee.e779d"
+            ]
+        ]
+    },
+    {
+        "id": "3c6de0ee.e779d",
+        "type": "debug",
+        "z": "19a0007f.a78c7",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1610,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "c650a3ac.7b806",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Update Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 80,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "f55a2a1e.d8ceb8",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is PUT",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "PUT",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 80,
+        "wires": [
+            [
+                "c650a3ac.7b806"
+            ]
+        ]
+    },
+    {
+        "id": "bf036b18.54f2b8",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Update API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/patient/'&msg.payload.ptId&'/'&msg.payload.datatype&'/'&msg.payload.data.sourceId",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 80,
+        "wires": [
+            [
+                "f55a2a1e.d8ceb8"
+            ]
+        ]
+    },
+    {
+        "id": "fc7de76c.4c88e8",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Update",
+        "func": "msg.payload = {\n    ptId: 9999999001,\n    datatype: 'allergies',\n    data: {\n        author: \"Not known\",\n        cause: \"Adverse reaction to aspirin\",\n        causeCode: \"http://snomed.info/sct\",\n        causeTerminology: 292044008,\n        dateCreated: 1181170800000,\n        id: \"kq21alape7mtw7eupmrzua\",\n        originalComposition: \"\",\n        originalSource: \"\",\n        reaction: \"Adverse reaction to aspirin\",\n        source: \"ethercis\",\n        sourceId: \"kq21alape7mtw7eupmrzua\",\n        terminologyCode: \"http://snomed.info/sct\"\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 80,
+        "wires": [
+            [
+                "bf036b18.54f2b8"
+            ]
+        ]
+    },
+    {
+        "id": "706f9466.b2038c",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Update Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "fc7de76c.4c88e8"
+            ]
+        ]
+    },
+    {
+        "id": "d56d7ab3.2931d8",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Delete Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 100,
+        "y": 120,
+        "wires": [
+            [
+                "adc6b985.d6f6b8"
+            ]
+        ]
+    },
+    {
+        "id": "3aa33d40.085f72",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Delete Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 120,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "f6978032.bcc92",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is DELETE",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "DELETE",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 870,
+        "y": 120,
+        "wires": [
+            [
+                "3aa33d40.085f72"
+            ]
+        ]
+    },
+    {
+        "id": "999350ab.b583b",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Delete API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/patient/'&msg.payload.ptId&'/'&msg.payload.datatype&'/'&msg.payload.sourceId",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 120,
+        "wires": [
+            [
+                "f6978032.bcc92"
+            ]
+        ]
+    },
+    {
+        "id": "adc6b985.d6f6b8",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Delete",
+        "func": "msg.payload = {\n    ptId: 9999999001,\n    datatype: 'allergies',\n    sourceId: \"uige9bzetlkce76w5x9hti\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 120,
+        "wires": [
+            [
+                "999350ab.b583b"
+            ]
+        ]
+    },
+    {
+        "id": "4f527af6.bfc134",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Medication Synopsis",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/synopsis/medications",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 410,
+        "y": 220,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "a8a26094.c5031",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Medications Synopsis Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 150,
+        "y": 220,
+        "wires": [
+            [
+                "4f527af6.bfc134"
+            ]
+        ]
+    },
+    {
+        "id": "8ac492da.df324",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Problems Synopsis",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/synopsis/problems",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 410,
+        "y": 260,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "b2874f22.10d1a",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Problems Synopsis Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "8ac492da.df324"
+            ]
+        ]
+    },
+    {
+        "id": "665282bc.bc340c",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Problems Data Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 400,
+        "wires": [
+            [
+                "46f2a325.0716ec"
+            ]
+        ]
+    },
+    {
+        "id": "46f2a325.0716ec",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Problems Data",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/patient/9999999001/problems/kb6q8h0zucjx8nuov7h8",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 400,
+        "y": 400,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "7091450.4b420bc",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Patient Create Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 520,
+        "wires": [
+            [
+                "8204f188.7cc73"
+            ]
+        ]
+    },
+    {
+        "id": "8204f188.7cc73",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Patient",
+        "func": "\nmsg.payload = {\n    data: {\n        address: {\n            city: \"Redhill\",\n            country: \"United Kingdom\",\n            district: \"Surrey\",\n            line: \"3 Cooper Walk\",\n            postalCode: \"RH1 6SF\",\n        },\n        birthDate: \"1956-11-10\",\n        gender: \"male\",\n        id: \"9999999801\",\n        name: {\n            family: \"Tweed\",\n            given: [\n                \"Rob\",\n            ],\n            prefix: \"Mr\",\n            telecom: \"+779017 876\"\n        },\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "36f42168.bc17ee"
+            ]
+        ]
+    },
+    {
+        "id": "36f42168.bc17ee",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Create API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/mpi/patient/9999999801'",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 520,
+        "wires": [
+            [
+                "5a360bde.32cc84"
+            ]
+        ]
+    },
+    {
+        "id": "5a360bde.32cc84",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is POST",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "POST",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 520,
+        "wires": [
+            [
+                "a8e3a988.9a86d8"
+            ]
+        ]
+    },
+    {
+        "id": "a8e3a988.9a86d8",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Create Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 520,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "455e5f6f.d1aa9",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Patient Update Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 580,
+        "wires": [
+            [
+                "888870ca.e3595"
+            ]
+        ]
+    },
+    {
+        "id": "888870ca.e3595",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Patient",
+        "func": "\nmsg.payload = {\n    data: {\n        address: {\n            city: \"Redhill\",\n            country: \"United Kingdom\",\n            district: \"Surrey\",\n            line: \"3 Cooper Walk\",\n            postalCode: \"RH1 6SF\"\n        },\n        birthDate: \"1956-11-10\",\n        gender: \"female\",\n        id: \"9999999801\",\n        name: {\n            family: \"Tweed\",\n            given: [\n                \"Rob\"\n            ],\n            prefix: \"Mr\",\n            telecom: \"+779017 876\"\n        }\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 580,
+        "wires": [
+            [
+                "b457a8f3.4f6b88"
+            ]
+        ]
+    },
+    {
+        "id": "b457a8f3.4f6b88",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Update API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/mpi/patient/'&msg.payload.data.id",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 580,
+        "wires": [
+            [
+                "4316fd00.4f5e04"
+            ]
+        ]
+    },
+    {
+        "id": "4316fd00.4f5e04",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is PUT",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "PUT",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 580,
+        "wires": [
+            [
+                "f3198408.be3dd8"
+            ]
+        ]
+    },
+    {
+        "id": "f3198408.be3dd8",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Update Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 580,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "80253260.d4002",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Patient Delete Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 640,
+        "wires": [
+            [
+                "e73f6528.209688"
+            ]
+        ]
+    },
+    {
+        "id": "e73f6528.209688",
+        "type": "function",
+        "z": "19a0007f.a78c7",
+        "name": "Generate Data for Delete",
+        "func": "msg.payload = {\n    ptId: 9999999801,\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 640,
+        "wires": [
+            [
+                "e545a654.2cc768"
+            ]
+        ]
+    },
+    {
+        "id": "f7414f20.bf166",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Method is DELETE",
+        "rules": [
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "DELETE",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 870,
+        "y": 640,
+        "wires": [
+            [
+                "380d8851.af4728"
+            ]
+        ]
+    },
+    {
+        "id": "380d8851.af4728",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "Delete Request",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 1060,
+        "y": 640,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    },
+    {
+        "id": "e545a654.2cc768",
+        "type": "change",
+        "z": "19a0007f.a78c7",
+        "name": "Delete API Route",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "'http://127.0.0.1:1880/mpi/patient/'&msg.payload.ptId",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 650,
+        "y": 640,
+        "wires": [
+            [
+                "f7414f20.bf166"
+            ]
+        ]
+    },
+    {
+        "id": "af073ee4.eff5b",
+        "type": "inject",
+        "z": "19a0007f.a78c7",
+        "name": "Patient Data Test",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 440,
+        "wires": [
+            [
+                "43fb8c14.2e67c4"
+            ]
+        ]
+    },
+    {
+        "id": "43fb8c14.2e67c4",
+        "type": "http request",
+        "z": "19a0007f.a78c7",
+        "name": "GET Patients Data",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://127.0.0.1:1880/mpi/patient/9999999801",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 390,
+        "y": 440,
+        "wires": [
+            [
+                "2c1da3f4.d13e4c"
+            ]
+        ]
+    }
+]

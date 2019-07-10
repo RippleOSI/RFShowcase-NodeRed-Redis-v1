@@ -1,0 +1,29 @@
+version: '3'
+services:
+
+ nginx:
+  image: nginx
+  container_name: nginx
+  volumes:
+   - ~/nodered-nginx/nginx/html:/nodered-nginx/html
+   - ~/nodered-nginx/nginx/conf.d:/etc/nginx/conf.d
+  ports:
+   - 80:80
+   - 443:443
+
+ nodered:
+  build: .
+  container_name: nodered
+  ports:
+   - 1880:1880
+
+ redis:
+  image: redis
+  container_name: redis
+  volumes:
+   - ./redis/redis.conf:/usr/local/etc/redis.conf
+  ports:
+   - 6379:6379
+  command: ["redis-server", "/usr/local/etc/redis.conf"]
+
+
