@@ -20,3 +20,5 @@ When you will deploy to dev/prod server you should change **server_name** with I
 After that you should go to nodered-nginx folder and type ``` docker-compose up -d ```, all containers will download and install needed packages.
 This version contains, containers for Nginx, Redis and NodeRed, also it has already built files for PulseTile in **nginx/html** folder. 
 
+## Update UI Builds
+In root folder we have **updateUI.sh** file, for updating latest UI builds, you just need open terminal and type ``` chmod +x uploadUI.sh ``` and  ```./updateUI.sh```. It will automatically update needed files for frontend side. 

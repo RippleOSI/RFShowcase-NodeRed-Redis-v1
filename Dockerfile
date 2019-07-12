@@ -1,4 +1,3 @@
 FROM nodered/node-red-docker
-USER root
-RUN npm install -g node-red-contrib-redis
+RUN npm install node-red-contrib-redis
 
