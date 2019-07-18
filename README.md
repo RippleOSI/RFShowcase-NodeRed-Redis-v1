@@ -22,3 +22,7 @@ This version contains, containers for Nginx, Redis and NodeRed, also it has alre
 
 ## Update UI Builds
 In root folder we have **updateUI.sh** file, for updating latest UI builds, you just need open terminal and type ``` chmod +x uploadUI.sh ``` and  ```./updateUI.sh```. It will automatically update needed files for frontend side. 
+
+## Youtube Explainer
+
+[![Overview of PulseTile on Youtube on Redis](https://img.youtube.com/vi/SYcUhV7Hshw/0.jpg)](https://www.youtube.com/watch?v=SYcUhV7Hshw)
