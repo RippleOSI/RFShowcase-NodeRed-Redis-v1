@@ -1,4 +1,4 @@
-# PulseTile + Node Red  + Redis : OS tools in action 
+# RF Showcase : PulseTile + Node Red  + Redis : OS tools in action - from the Ripple Foundation
 
 ## Installation Guide
 Please put project to your home folder (~), you should have installed docker and docker-compose on your machine.
@@ -26,3 +26,4 @@ In root folder we have **updateUI.sh** file, for updating latest UI builds, you 
 ## Youtube Explainer
 
 [![Overview of PulseTile on Youtube on Redis](https://img.youtube.com/vi/SYcUhV7Hshw/0.jpg)](https://www.youtube.com/watch?v=SYcUhV7Hshw)
+
