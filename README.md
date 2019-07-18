@@ -32,3 +32,15 @@ In root folder we have **updateUI.sh** file, for updating latest UI builds, you 
 
 [![Overview of PulseTile on Youtube on Redis](https://img.youtube.com/vi/SYcUhV7Hshw/0.jpg)](https://www.youtube.com/watch?v=SYcUhV7Hshw)
 
+## Links to related repos
+
+PulseTile UX/UI frontend 
+https://github.com/PulseTile/PulseTile-RA/tree/nodered-demo
+
+NodeRed on Redis (inc Docker)
+https://github.com/RippleOSI/NodeRed-JSON-Redis-exp2
+
+these components are pulled together in this demo
+
+
+
