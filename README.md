@@ -1,4 +1,4 @@
-# Node Red Project with Nginx, PulseTile and Redis 
+# PulseTile + Node Red  + Redis : OS tools in action 
 
 ## Installation Guide
 Please put project to your home folder (~), you should have installed docker and docker-compose on your machine.
