@@ -34,10 +34,10 @@ In root folder we have **updateUI.sh** file, for updating latest UI builds, you 
 
 ## Links to related repos
 
-PulseTile UX/UI frontend 
+PulseTile  (UX/UI frontend)
 https://github.com/PulseTile/PulseTile-RA/tree/nodered-demo
 
-NodeRed on Redis (inc Docker)
+NodeRed (for API flows) on Redis (for persistence)  - via Docker
 https://github.com/RippleOSI/NodeRed-JSON-Redis-exp2
 
 these components are pulled together in this demo
